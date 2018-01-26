@@ -1,0 +1,72 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Use this template to create an IoT thing for the esp8266-gardener",
+    "Metadata": {
+
+    },
+    "Parameters": {
+        "NameParameter":{
+            "Type": "String",
+            "Description": "Name for the IoT thing"
+        }
+    },
+    "Mappings": {
+
+    },
+    "Conditions": {
+
+    },
+    "Resources": {
+        "esp8266gardener":{
+            "Type": "AWS::IoT::Thing",
+            "Properties":{
+                "ThingName":{
+                    "Ref": "NameParameter"
+                }
+            }
+        },
+        "esp8266gardeneruser":{
+            "Type": "AWS::IAM::User",
+            "Properties":{
+                "Policies":[{
+                    "PolicyName": "giveiotaccess",
+                    "PolicyDocument":{
+                        "Version": "2012-10-17",
+                        "Statement":[{
+                            "Effect": "Allow",
+                            "Action": [ "iot:*" ],
+                            "Resource": {
+                                "Fn::Join": [ 
+                                    "/", [{
+                                        "Fn::Join": [ ":", ["arn:aws:iot", {"Ref": "AWS::Region"}, {"Ref": "AWS::AccountId" } ,"thing"]]
+                                } , {"Ref": "esp8266gardener"}]]
+                            }
+                        }]
+                    }
+                }]
+            }
+        },
+        "esp8266gardenerkey":{
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": { "Ref" : "esp8266gardeneruser" }
+            }
+        }
+    },
+    "Outputs": {
+        "AccessKeyID": {
+            "Value" : { "Ref": "esp8266gardenerkey" }
+        },
+        "SecretAccessKey":{
+            "Value":{
+                "Fn::GetAtt": [ "esp8266gardenerkey", "SecretAccessKey"]
+            }
+        },
+        "AWSRegion":{
+            "Value" : { "Ref": "AWS::Region" }
+        },
+        "AWSPath":{
+            "Value" : { "Fn::Join": ["/", ["/things", {"Ref": "esp8266gardener"}, "shadow"]]}
+        }
+    }
+}
