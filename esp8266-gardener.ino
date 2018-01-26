@@ -7,15 +7,15 @@
 #include "keys.h"
 
 // keys.cpp contains
-// const char* awsKeyID = "";
-// const char* awsSecKey = "";
-// const char* ssid = "";
-// const char* password = "";
+// const char* awsRegion = "us-east-1";
+// const char* awsDomain = "a14bdnvwk8zpaa.iot.us-east-1.amazonaws.com";
+// const char* awsPath = "/things/esp8266-gardener/shadow";
+// const char* awsKeyID = ;
+// const char* awsSecKey = ;
+// const char* ssid = ;
+// const char* password = ;
 
-const char* awsRegion = "us-east-1";
 const char* awsEndpoint = "amazonaws.com";
-const char* awsDomain = "a14bdnvwk8zpaa.iot.us-east-1.amazonaws.com";
-const char* awsPath = "/things/esp8266-gardener-sim/shadow";
 
 Esp8266HttpClient httpClient;
 Esp8266DateTimeProvider dateTimeProvider;
