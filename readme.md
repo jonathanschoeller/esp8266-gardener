@@ -5,8 +5,10 @@ An ESP8266 based project for remotely watering plants on battery power.
 The ESP8266 Gardener connects to your Wi-Fi network and communicates with AWS IoT in the cloud. As a prerequisite, you will need to have an AWS account.
 
 First, create a file in the root folder named keys.cpp. This file will contain your passwords and other details that are unique to your project.
+
 Next, use the included [AWS CloudFormation](esp8266-gardener.cform) template to create a new stack.
 Once the CloudFormation stack is created, look at the outputs from the stack. You should see `AccessKeyID`, `SecretAccessKey`, `AWSRegion`, and `AWSPath`.
+
 In the keys.cpp file you created, add the following:
 ```cpp
 #include "keys.h"
