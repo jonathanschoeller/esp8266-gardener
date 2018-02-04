@@ -23,6 +23,10 @@ Esp8266DateTimeProvider dateTimeProvider;
 AmazonIOTClient iotClient;
 int totalValveOpenMS = 0;
 const int sleepSeconds = 60;
+const int maxVoltageMillis = 3300;
+const int maxA2DValue = 556;
+
+ADC_MODE(ADC_VCC);
 
 void setup() {
   initSerial();
@@ -101,9 +105,19 @@ void processIoTShadow() {
     if (state.containsKey("desired")){
       Serial.println("Shadow has desired state");
       JsonObject& desired = state["desired"];
+      JsonObject& reported = state["reported"];
+
+      // Check if battery level has changed by >= 5%
+      if (reported.containsKey("bat")){
+        int battery_mV = reported["bat"];
+        int batteryLevel = getBatteryLevel();
+        if (abs(battery_mV - batteryLevel)/(float)batteryLevel >= 0.05){
+          sendState(false);
+        }
+      }
+      
       if (desired.containsKey("totalValveOpenMS")) {
         int state_desired_totalValveOpenMS = desired["totalValveOpenMS"];
-        
         int openFor = state_desired_totalValveOpenMS - totalValveOpenMS;
   
         if (openFor > 0) {
@@ -149,6 +163,7 @@ void sendState(bool clearDesired)
   JsonObject& state = root.createNestedObject("state");
   JsonObject& reported = state.createNestedObject("reported");
   reported["totalValveOpenMS"] = totalValveOpenMS;
+  reported["bat"] = getBatteryLevel();
 
   if (clearDesired){
     state["desired"] = RawJson("null");
@@ -161,5 +176,10 @@ void sendState(bool clearDesired)
   // TODO: Optimistic locking.
   iotClient.update_shadow(jsonString.c_str(), actionError);
   Serial.println("Shadow updated");
+}
+
+int getBatteryLevel()
+{
+  return ESP.getVcc()*1.024;
 }
 
