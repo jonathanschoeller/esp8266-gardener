@@ -25,10 +25,14 @@ int totalValveOpenMS = 0;
 const int sleepSeconds = 60;
 const int maxVoltageMillis = 3300;
 const int maxA2DValue = 556;
+const int valvePin = 15;
 
 ADC_MODE(ADC_VCC);
 
 void setup() {
+  pinMode(valvePin, OUTPUT);
+  digitalWrite(valvePin, LOW);
+  
   initSerial();
 
   connectToWiFi();
@@ -123,8 +127,10 @@ void processIoTShadow() {
         if (openFor > 0) {
           Serial.print("Opening valve for ");
           Serial.println(openFor);
+          digitalWrite(valvePin, HIGH);
           delay(openFor);
           Serial.println("Closing valve");
+          digitalWrite(valvePin, LOW);
   
           totalValveOpenMS += openFor;
           saveTotalValveOpenMS();
